@@ -14,14 +14,14 @@ func exitUnlessDatabaseExists() {
 		return
 	}
 
-	fmt.Println("Could not find Hubonator database file.")
+	fmt.Println("Could not find Klatsch database file.")
 	fmt.Println("Have you run the `init` command?")
 
 	os.Exit(0)
 }
 
 // TODO so this feels pretty gross...
-func getDatabaseFile() string { return "hubonator.db" }
+func getDatabaseFile() string { return "klatsch.db" }
 
 func getDatabaseHandle() *sql.DB {
 	sqlfile := getDatabaseFile()

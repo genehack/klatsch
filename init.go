@@ -12,7 +12,7 @@ import (
 
 func initStuff(cmd *cobra.Command, args []string) {
 	if _, err := os.Stat(getDatabaseFile()); err == nil {
-		fmt.Println("A hubonator database already exists. Not re-init-ing.")
+		fmt.Println("A Klatsch database already exists. Not re-init-ing.")
 		fmt.Println("Delete the database and rerun the command if you wish to proceed.")
 		return
 	}

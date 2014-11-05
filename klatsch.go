@@ -39,7 +39,7 @@ func main() {
 		},
 	}
 
-	var rootCmd = &cobra.Command{Use: "hubonator"}
+	var rootCmd = &cobra.Command{Use: "klatsch"}
 	rootCmd.AddCommand(cmdFetch, cmdImportTweets, cmdInit, cmdServer)
 	rootCmd.Execute()
 }
