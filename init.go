@@ -50,7 +50,7 @@ func readOne(prompt string) (value string, err error) {
 func readSecrets() (secrets map[string]string, err error) {
 	secrets = make(map[string]string, 4)
 
-	secrets["consumerToken"], err = readOne("Enter your application (consumer) token: ")
+	secrets["consumerKey"], err = readOne("Enter your application (consumer) key: ")
 	if err != nil {
 		return
 	}
