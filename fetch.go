@@ -153,6 +153,10 @@ func writeOutTimeline(db *sql.DB) (err error) {
 
 	tmpl := template.Must(template.ParseGlob("tmpl/*.tmpl"))
 
+	if _, err := os.Stat("root"); err != nil {
+		os.Mkdir("root", 0755)
+	}
+
 	output, err := os.Create("root/timeline.html")
 	if err != nil {
 		return nil
