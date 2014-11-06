@@ -3,8 +3,11 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"html/template"
 	"log"
 	"net/url"
+	"os"
+	"regexp"
 	"time"
 
 	"github.com/ChimeraCoder/anaconda"
@@ -19,7 +22,7 @@ func fetch(cmd *cobra.Command, args []string) {
 
 	twitter := getTwitterApiHandle(db)
 
-	v := url.Values{"count": {"200"}, "exclude_replies": {"true"}}
+	v := url.Values{"count": {"200"}}
 	timeline, err := twitter.GetUserTimeline(v)
 	if err != nil {
 		log.Fatal(err)
@@ -29,10 +32,18 @@ func fetch(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	err = writeOutTimeline(db)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func getConfig(db *sql.DB) (config map[string]string) {
 	rows, err := db.Query("SELECT key,val from config")
+	if err != nil {
+		return nil
+	}
 	defer rows.Close()
 
 	config = make(map[string]string)
@@ -104,4 +115,48 @@ func saveTimeline(db *sql.DB, timeline []anaconda.Tweet) (err error) {
 	tx.Commit()
 
 	return nil
+}
+
+func writeOutTimeline(db *sql.DB) (err error) {
+	rows, err := db.Query("SELECT id,created,text FROM posts ORDER BY id desc")
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	type KlatchTweet struct {
+		Id, Timestamp, Text string
+	}
+
+	tweets := []KlatchTweet{}
+	count := 0
+	for rows.Next() {
+		var id, text string
+		var created int64
+		if err := rows.Scan(&id, &created, &text); err != nil {
+			return err
+		}
+		if matched, err := regexp.MatchString("^[RT|@]", text); err != nil {
+			return err
+		} else if matched {
+			continue
+		}
+
+		timestamp := time.Unix(created, 0).Format(time.RFC850)
+		tweets = append(tweets, KlatchTweet{id, timestamp, text})
+		count = count + 1
+		if count >= 20 {
+			break
+		}
+	}
+
+	tmpl := template.Must(template.ParseGlob("tmpl/*.tmpl"))
+
+	output, err := os.Create("root/timeline.html")
+	if err != nil {
+		return nil
+	}
+
+	return tmpl.Execute(output, tweets)
+
 }

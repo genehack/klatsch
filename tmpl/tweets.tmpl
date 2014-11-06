@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>
+      mah tweets!
+    </title>
+  </head>
+  <body>
+    <h1>Mah Tweets!</h1>
+    {{range .}}
+    <div>
+      <p>
+        {{.Text}}
+      </p>
+      <p>
+        <a target="_new" href="http://twitter.com/genehack/status/{{.Id}}">{{.Timestamp}}</a>
+      </p>
+    </div>
+    {{end}}
+
+    <h4>Powered by Klatsch!</h4>
+  </body>
+</html>
