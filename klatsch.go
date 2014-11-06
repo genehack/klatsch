@@ -34,9 +34,7 @@ func main() {
 		Use:   "server",
 		Short: "server",
 		Long:  "long server",
-		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("server not implemented yet.")
-		},
+		Run:   server,
 	}
 
 	var rootCmd = &cobra.Command{Use: "klatsch"}
