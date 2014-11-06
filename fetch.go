@@ -22,6 +22,7 @@ func fetch(cmd *cobra.Command, args []string) {
 
 	twitter := getTwitterApiHandle(db)
 
+	// FIXME should also be using a 'since' value here, pulled out of the db
 	v := url.Values{"count": {"200"}}
 	timeline, err := twitter.GetUserTimeline(v)
 	if err != nil {
