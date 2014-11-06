@@ -88,8 +88,7 @@ func saveTimeline(db *sql.DB, timeline []anaconda.Tweet) (err error) {
 	defer stmt.Close()
 
 	for _, tweet := range timeline {
-		mahTweet := new(Tweet)
-		mahTweet.initFromAnacondaTweet(tweet)
+		mahTweet := initFromAnacondaTweet(tweet)
 
 		created, err := time.Parse(time.RubyDate, mahTweet.CreatedAt)
 		if err != nil {

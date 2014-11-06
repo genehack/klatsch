@@ -24,7 +24,8 @@ type Tweet struct {
 	Truncated           bool        `json:"truncated"`
 }
 
-func (tweet *Tweet) initFromAnacondaTweet(aTweet anaconda.Tweet) {
+func initFromAnacondaTweet(aTweet anaconda.Tweet) (tweet *Tweet) {
+	tweet = new(Tweet)
 	tweet.Contributors = aTweet.Contributors
 	tweet.Coordinates = aTweet.Coordinates
 	tweet.CreatedAt = aTweet.CreatedAt
@@ -39,4 +40,5 @@ func (tweet *Tweet) initFromAnacondaTweet(aTweet anaconda.Tweet) {
 	tweet.Retweeted = aTweet.Retweeted
 	tweet.Text = aTweet.Text
 	tweet.Truncated = aTweet.Truncated
+	return
 }
