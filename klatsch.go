@@ -30,6 +30,13 @@ func main() {
 		Run:   initStuff,
 	}
 
+	var cmdSearch = &cobra.Command{
+		Use:   "search",
+		Short: "search",
+		Long:  "long search",
+		Run:   search,
+	}
+
 	var cmdServer = &cobra.Command{
 		Use:   "server",
 		Short: "server",
@@ -38,6 +45,6 @@ func main() {
 	}
 
 	var rootCmd = &cobra.Command{Use: "klatsch"}
-	rootCmd.AddCommand(cmdFetch, cmdImportTweets, cmdInit, cmdServer)
+	rootCmd.AddCommand(cmdFetch, cmdImportTweets, cmdInit, cmdSearch, cmdServer)
 	rootCmd.Execute()
 }
