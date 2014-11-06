@@ -28,14 +28,15 @@ func fetch(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	err = saveTimeline(db, timeline)
+	inserted, err := saveTimeline(db, timeline)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = writeOutTimeline(db)
-	if err != nil {
-		log.Fatal(err)
+	if inserted > 0 {
+		if err = writeOutTimeline(db); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
@@ -75,15 +76,15 @@ func getTwitterApiHandle(db *sql.DB) (api *anaconda.TwitterApi) {
 	return
 }
 
-func saveTimeline(db *sql.DB, timeline []anaconda.Tweet) (err error) {
+func saveTimeline(db *sql.DB, timeline []anaconda.Tweet) (inserted int, err error) {
 	tx, err := db.Begin()
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	stmt, err := tx.Prepare("INSERT INTO posts (id,created,text,cruft) VALUES (?,?,?,?)")
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer stmt.Close()
 
@@ -92,28 +93,29 @@ func saveTimeline(db *sql.DB, timeline []anaconda.Tweet) (err error) {
 
 		created, err := time.Parse(time.RubyDate, mahTweet.CreatedAt)
 		if err != nil {
-			return err
+			return inserted, err
 		}
 
 		// TODO strip this down so cruft isn't so huge -- particularly, get rid of the 'user' field.
 		cruft, err := json.Marshal(mahTweet)
 		if err != nil {
-			return err
+			return inserted, err
 		}
 
-		_, err = stmt.Exec(mahTweet.Id, created.Unix(), mahTweet.Text, cruft)
-		if err != nil {
+		if _, err = stmt.Exec(mahTweet.Id, created.Unix(), mahTweet.Text, cruft); err != nil {
 			if err.Error() == "UNIQUE constraint failed: posts.id" {
 				//log.Printf("Skipping tweet ID %d because already in database.\n", tweet.Id)
 				continue
+			} else {
+				return inserted, err
 			}
-			return err
 		}
-		log.Printf("Inserted tweet ID %d into database", tweet.Id)
+
+		inserted++
 	}
 	tx.Commit()
 
-	return nil
+	return inserted, nil
 }
 
 func writeOutTimeline(db *sql.DB) (err error) {
