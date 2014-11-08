@@ -13,6 +13,9 @@ func main() {
 		Long:  "long fetch",
 		Run:   fetch,
 	}
+	var Force bool
+	cmdFetch.PersistentFlags().BoolVarP(&Force, "force", "F", false,
+		"build HTML page even if nothing has changed")
 
 	var cmdImportTweets = &cobra.Command{
 		Use:   "import_tweets",

@@ -15,6 +15,11 @@ import (
 )
 
 func fetch(cmd *cobra.Command, args []string) {
+	var force bool = false
+	if cmd.Flag("force").Value.String() == "true" {
+		force = true
+	}
+
 	exitUnlessDatabaseExists()
 
 	db := getDatabaseHandle()
@@ -34,7 +39,7 @@ func fetch(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	if inserted > 0 {
+	if force || inserted > 0 {
 		if err = writeOutTimeline(db); err != nil {
 			log.Fatal(err)
 		}
