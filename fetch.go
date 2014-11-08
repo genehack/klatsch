@@ -123,6 +123,9 @@ func saveTimeline(db *sql.DB, timeline []anaconda.Tweet) (inserted int, err erro
 
 	return inserted, nil
 }
+func updatetime() string {
+	return time.Now().Format(time.RFC850)
+}
 
 func writeOutTimeline(db *sql.DB) (err error) {
 	rows, err := db.Query("SELECT id,created,text FROM posts ORDER BY id desc")
@@ -157,7 +160,9 @@ func writeOutTimeline(db *sql.DB) (err error) {
 		}
 	}
 
-	tmpl := template.Must(template.ParseGlob("tmpl/*.tmpl"))
+	funcMap := template.FuncMap{"updatetime": updatetime}
+
+	tmpl := template.Must(template.New("tweets.tmpl").Funcs(funcMap).ParseFiles("tmpl/tweets.tmpl"))
 
 	if _, err := os.Stat("root"); err != nil {
 		os.Mkdir("root", 0755)
