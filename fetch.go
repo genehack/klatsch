@@ -49,7 +49,7 @@ func fetch(cmd *cobra.Command, args []string) {
 func getConfig(db *sql.DB) (config map[string]string) {
 	rows, err := db.Query("SELECT key,val from config")
 	if err != nil {
-		return nil
+		log.Fatal(err)
 	}
 	defer rows.Close()
 
