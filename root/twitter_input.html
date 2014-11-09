@@ -1,0 +1,22 @@
+<form name="form" role="form">
+  <div class="form-group" data-ng-class="error('postfield')">
+    <div class="controls">
+      <input type="text" name="postfield" class="form-control" data-ng-trim=false
+             counted-max="140" data-ng-model="post.content"
+             placeholder="Compose new tweet" />
+    </div>
+
+    <div class="pull-right" style="margin:5px 0;">
+      <span class="help-block inline-display" data-ng-show="form.postfield.$error.unique">
+        Post is too long!
+      </span>
+      <span class="count" style="margin-right:5px"
+            data-ng-class="error('postfield')">
+        {{140 - post.content.length}}
+      </span>
+      <button class="btn btn-primary" data-ng-click="postToTwitter(account)" data-ng-disabled="!form.$valid">
+        Post to Twitter
+      </button>
+    </div>
+  </div>
+</form>

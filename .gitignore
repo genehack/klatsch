@@ -24,4 +24,4 @@ _testmain.go
 *.prof
 klatsch
 klatsch.db
-root
+root/timeline.html
