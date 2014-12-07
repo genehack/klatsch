@@ -53,7 +53,7 @@ CREATE TABLE posts (
 `
 		_, err = db.Exec(sqlStatement)
 		if err != nil {
-			log.Fatal("%q: %s\n", err, sqlStatement)
+			log.Fatalf("%q: %s\n", err, sqlStatement)
 		}
 	}
 

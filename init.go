@@ -40,7 +40,7 @@ func readOne(prompt string) (value string, err error) {
 
 	value = strings.TrimSpace(value)
 	if value == "" {
-		fmt.Println("ERROR: you must enter a value!\n\n")
+		fmt.Print("ERROR: you must enter a value!\n\n\n")
 		return readOne(prompt)
 	}
 
