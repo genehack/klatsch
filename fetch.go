@@ -29,6 +29,7 @@ func fetch(cmd *cobra.Command, args []string) {
 
 	// FIXME should also be using a 'since' value here, pulled out of the db
 	v := url.Values{"count": {"200"}}
+	// FIXME this wants to be GetHomeTimeline()
 	timeline, err := twitter.GetUserTimeline(v)
 	if err != nil {
 		log.Fatal(err)
@@ -123,6 +124,7 @@ func saveTimeline(db *sql.DB, timeline []anaconda.Tweet) (inserted int, err erro
 
 	return inserted, nil
 }
+
 func updatetime() string {
 	return time.Now().Format(time.RFC850)
 }
