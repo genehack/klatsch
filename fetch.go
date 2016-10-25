@@ -3,15 +3,18 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"log"
 	"net/url"
 	"os"
 	"regexp"
+	"strconv"
 	"time"
 
 	"github.com/ChimeraCoder/anaconda"
 	"github.com/spf13/cobra"
+	"github.com/olivere/elastic"
 )
 
 func fetch(cmd *cobra.Command, args []string) {
@@ -95,6 +98,11 @@ func saveTimeline(db *sql.DB, timeline []anaconda.Tweet) (inserted int, err erro
 	}
 	defer stmt.Close()
 
+	client, err := elastic.NewClient(elastic.SetURL("http://ferb:9200"))
+	if err != nil {
+		return 0, err
+	}
+
 	for _, tweet := range timeline {
 		mahTweet := initFromAnacondaTweet(tweet)
 
@@ -117,6 +125,36 @@ func saveTimeline(db *sql.DB, timeline []anaconda.Tweet) (inserted int, err erro
 				return inserted, err
 			}
 		}
+
+		// Use the IndexExists service to check if a specified index exists.
+		exists, err := client.IndexExists("twitter").Do()
+		if err != nil {
+			// Handle error
+			panic(err)
+		}
+		if !exists {
+			// Create a new index.
+			createIndex, err := client.CreateIndex("twitter").Do()
+			if err != nil {
+				// Handle error
+				panic(err)
+			}
+			if !createIndex.Acknowledged {
+				// Not acknowledged
+			}
+		}
+
+		put, err := client.Index().
+			Index("twitter").
+			Type("tweet").
+			Id(strconv.FormatInt(mahTweet.Id, 10)).
+			BodyJson(mahTweet).
+			Do()
+		if err != nil {
+			// Handle error
+			panic(err)
+		}
+		fmt.Printf("Indexed tweet %s to index %s, type %s\n", put.Id, put.Index, put.Type)
 
 		inserted++
 	}
